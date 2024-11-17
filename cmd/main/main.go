@@ -15,6 +15,8 @@ import (
 	"snowConsensusGo/internal/types"
 )
 
+var sharedNetwork *network.Network
+
 func nodeProcess(startID, endID int, net *network.Network) {
 	nodes := make([]*node.Node, 0)
 	for nodeID := startID; nodeID < endID; nodeID++ {
@@ -37,6 +39,7 @@ func nodeProcess(startID, endID int, net *network.Network) {
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
+	sharedNetwork = network.NewNetwork()
 	var wg sync.WaitGroup
 
 	for i := 0; i < types.NUM_PROCESSES; i++ {
@@ -61,8 +64,7 @@ func init() {
 	if len(os.Args) > 2 {
 		startID, _ := strconv.Atoi(os.Args[1])
 		endID, _ := strconv.Atoi(os.Args[2])
-		net := network.NewNetwork()
-		nodeProcess(startID, endID, net)
+		nodeProcess(startID, endID, sharedNetwork)
 		os.Exit(0)
 	}
 }
