@@ -1,7 +1,11 @@
+//snowConsensusGo/cmd/main/main.go
 package main
 
 import (
 	"math/rand"
+	"os"
+	"os/exec"
+	"strconv"
 	"sync"
 	"time"
 
@@ -11,9 +15,7 @@ import (
 	"snowConsensusGo/internal/types"
 )
 
-func nodeProcess(startID, endID int, net *network.Network, wg *sync.WaitGroup) {
-	defer wg.Done()
-
+func nodeProcess(startID, endID int, net *network.Network) {
 	nodes := make([]*node.Node, 0)
 	for nodeID := startID; nodeID < endID; nodeID++ {
 		n := node.NewNode(nodeID, net)
@@ -35,15 +37,32 @@ func nodeProcess(startID, endID int, net *network.Network, wg *sync.WaitGroup) {
 
 func main() {
 	rand.Seed(time.Now().UnixNano())
-	net := network.NewNetwork()
 	var wg sync.WaitGroup
 
 	for i := 0; i < types.NUM_PROCESSES; i++ {
 		startID := i * types.NODES_PER_PROCESS
 		endID := (i + 1) * types.NODES_PER_PROCESS
 		wg.Add(1)
-		go nodeProcess(startID, endID, net, &wg)
+		go func(startID, endID int) {
+			defer wg.Done()
+			cmd := exec.Command(os.Args[0], strconv.Itoa(startID), strconv.Itoa(endID))
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
+			if err := cmd.Run(); err != nil {
+				panic(err)
+			}
+		}(startID, endID)
 	}
 
 	wg.Wait()
+}
+
+func init() {
+	if len(os.Args) > 2 {
+		startID, _ := strconv.Atoi(os.Args[1])
+		endID, _ := strconv.Atoi(os.Args[2])
+		net := network.NewNetwork()
+		nodeProcess(startID, endID, net)
+		os.Exit(0)
+	}
 }
