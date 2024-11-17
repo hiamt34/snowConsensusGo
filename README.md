@@ -17,11 +17,26 @@ Dự án này mô phỏng quá trình đồng thuận bằng cách tạo ra các
 
 ## **Cấu trúc dự án**
 
-- `internal/network/`: Quản lý mạng lưới và giao tiếp giữa các node.
-- `internal/node/`: Triển khai các node và quy trình đồng thuận.
-- `internal/types/`: Định nghĩa các kiểu dữ liệu và tham số cấu hình.
-- `cmd/main/`: Chương trình chính để chạy mô phỏng.
-- `tests/`: Các bài kiểm thử để đảm bảo tính đúng đắn của thuật toán.
+```
+snowConsensusGo/
+├── cmd/
+│   └── main/
+│       └── main.go                # Chứa hàm main và khởi động quy trình
+├── internal/
+│   ├── node/
+│   │   └── node.go                # Định nghĩa Node và các chức năng
+│   ├── network/
+│   │   └── network.go             # Định nghĩa Network và các chức năng P2P
+│   ├── transaction/
+│   │   └── transaction.go         # Định nghĩa Transaction
+├── pkg/                           # Chứa các hàm 3rd ...          
+│   └── logger/
+│       └── logger.go              # Định nghĩa Logger để ghi lại thông tin
+├── tests/
+│   └── consensus_test.go          # Kiểm thử cho consensus
+├── go.mod                         # Thông tin module Go và các phụ thuộc
+└── README.md                      # Hướng dẫn sử dụng dự án
+```
 
 ## **Yêu cầu hệ thống**
 
